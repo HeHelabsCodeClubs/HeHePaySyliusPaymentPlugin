@@ -16,5 +16,8 @@
             <argument type="service" id="sylius.http_client" />
             <tag name="payum.action" factory="sylius_payment" alias="payum.action.capture" />
         </service>
+        <service id="Acme\SyliusExamplePlugin\Payum\Action\StatusAction" public="true">
+            <tag name="payum.action" factory="sylius_payment" alias="payum.action.status"/>
+        </service>
     </services>
 </container>
