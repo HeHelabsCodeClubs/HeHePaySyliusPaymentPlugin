@@ -34,7 +34,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
 
         try {
-            $response = $this->client->request('POST', 'https://sylius-payment.free.beeceptor.com', [
+            $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
                 'body' => json_encode([
                     'price' => $payment->getAmount(),
                     'currency' => $payment->getCurrencyCode(),
