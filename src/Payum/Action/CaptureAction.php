@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Acme\SyliusExamplePlugin\Payum\Action;
+namespace HeHePay\SyliusPaymentPlugin\Payum\Action;
 
-use Acme\SyliusExamplePlugin\Payum\SyliusApi;
+use HeHePay\SyliusPaymentPlugin\Payum\SyliusApi;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Payum\Core\Action\ActionInterface;
