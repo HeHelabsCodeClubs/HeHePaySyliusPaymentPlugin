@@ -34,11 +34,23 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
 
         try {
+            $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/auth/get-token', [
+                'body' => json_encode([
+                    'app_name' => 'hehe-cart',
+                    'app_key'=> 'C5485732FA6DEB48779E2E3DCAE8A',
+                ]),
+            ]);
+
             $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
                 'body' => json_encode([
-                    'price' => $payment->getAmount(),
+                    'order_id' => 'id',
+                    'amount' => $payment->getAmount(),
                     'currency' => $payment->getCurrencyCode(),
-                    'api_key' => $this->api->getApiKey(),
+                    'app_logo_url' => 'https://res.cloudinary.com/hehe/image/upload/q_auto,f_auto,fl_lossy/v1569944754/logistics-platform/images/hehe-logo.png',
+                    'site_url' => 'https://storefront.commerce.hehe.rw/',
+                    'transaction_description' => 'Online Payment.',
+                    'payment_result_callback' => '#',
+                    'app_redirection_url' => 'http://localhost:8000/en_US/order/0c3dm-4zjU',
                 ]),
             ]);
         } catch (RequestException $exception) {
