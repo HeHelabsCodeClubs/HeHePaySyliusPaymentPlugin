@@ -12,6 +12,26 @@ final class SyliusGatewayConfigurationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('api_key', TextType::class);
+        $builder->add('app_name', TextType::class, [
+            'label' => 'App Name',
+            'constraints' => [
+                new NotBlank(
+                    [
+                        'message' => 'App Name Not Blank',
+                        'groups' => ['sylius'],
+                    ]
+                ),
+            ],
+        ])->add('app_key', TextType::class, [
+            'label' => 'App Key',
+            'constraints' => [
+                new NotBlank(
+                    [
+                        'message' => 'App Key Not Blank',
+                        'groups' => ['sylius'],
+                    ]
+                ),
+            ],
+        ]);
     }
 }
