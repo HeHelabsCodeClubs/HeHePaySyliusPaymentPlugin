@@ -26,6 +26,36 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         $this->client = $client;
     }
 
+    public function get_token() {
+        $url = "https://gateway.hehepay.rw/api/v1/auth/get-token";
+        
+        $postData = array(
+            'app_name' => 'hehe-cart',
+            'app_key'=> 'C5485732FA6DEB48779E2E3DCAE8A',
+        );
+
+        // for sending data as json type
+        $fields = json_encode($postData);
+
+        $ch = curl_init($url);
+        curl_setopt(
+            $ch, 
+            CURLOPT_HTTPHEADER, 
+            array(
+                'Content-Type: application/json',
+            )
+        );
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return $result;
+    }
+
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -34,29 +64,29 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
 
         try {
-            $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/auth/get-token', [
-                'body' => json_encode([
-                    'app_name' => 'hehe-cart',
-                    'app_key'=> 'C5485732FA6DEB48779E2E3DCAE8A',
-                ]),
-            ]);
+            $token = $this->get_token();
 
             $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
                 'body' => json_encode([
-                    'order_id' => 'id',
+                    'order_id' => $payment->getOrderId(),
                     'amount' => $payment->getAmount(),
                     'currency' => $payment->getCurrencyCode(),
                     'app_logo_url' => 'https://res.cloudinary.com/hehe/image/upload/q_auto,f_auto,fl_lossy/v1569944754/logistics-platform/images/hehe-logo.png',
                     'site_url' => 'https://storefront.commerce.hehe.rw/',
-                    'transaction_description' => 'Online Payment.',
+                    'transaction_description' => 'Online Payment.'.$payment->getOrderId().'/'.$payment->getOrder(),
                     'payment_result_callback' => '#',
                     'app_redirection_url' => 'http://localhost:8000/en_US/order/0c3dm-4zjU',
                 ]),
+                'headers' => json_encode([
+                    'Authorization' => 'Bearer '.$token->data->access_token,
+                    'content-type' => 'application/json',
+                ])
             ]);
         } catch (RequestException $exception) {
             $response = $exception->getResponse();
         } finally {
-            $payment->setDetails(['status' => $response->getStatusCode()]);
+            header('Location: '.$response->data->payment_redirection_url);
+            // $payment->setDetails(['status' => $response->getStatusCode()]);
         }
     }
 
