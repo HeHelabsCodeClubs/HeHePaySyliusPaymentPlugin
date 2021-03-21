@@ -7,8 +7,7 @@ namespace HeHePay\SyliusPaymentPlugin\Payum;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
 use HeHePay\SyliusPaymentPlugin\Payum\Action\StatusAction;
-use HeHePay\SyliusPaymentPlugin\Payum\Action\CaptureAction;
-
+// use HeHePay\SyliusPaymentPlugin\Payum\Action\CaptureAction;
 final class HeHePayGatewayFactory extends GatewayFactory
 {
     protected function populateConfig(ArrayObject $config): void
@@ -17,7 +16,7 @@ final class HeHePayGatewayFactory extends GatewayFactory
             'payum.factory_name' => 'hehe_pay',
             'payum.factory_title' => 'HeHe Pay',
             'payum.action.status' => new StatusAction(),
-            'payum.action.capture' => new CaptureAction(),
+            // 'payum.action.capture' => new CaptureAction(),
         ]);
 
         $config['payum.api'] = function (ArrayObject $config) {
