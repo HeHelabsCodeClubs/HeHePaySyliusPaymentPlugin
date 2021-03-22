@@ -21,11 +21,6 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
     /** @var SyliusApi */
     private $api;
 
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
-
     public function get_token() {
         $url = "https://gateway.hehepay.rw/api/v1/auth/get-token";
         
@@ -56,7 +51,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         return $result;
     }
 
-    public function execute($request): void
+    public function execute(Client $client, $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
@@ -66,7 +61,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         try {
             $token = $this->get_token();
 
-            $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
+            $response = $client->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
                 'body' => json_encode([
                     'order_id' => $payment->getOrder(),
                     'amount' => $payment->getAmount(),
