@@ -68,22 +68,23 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         try {
             $token = $this->get_token();
 
-            $response = $this->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
-                'body' => json_encode([
-                    'order_id' => $payment->getOrder(),
-                    'amount' => $payment->getAmount(),
-                    'currency' => $payment->getCurrencyCode(),
-                    'app_logo_url' => 'https://res.cloudinary.com/hehe/image/upload/q_auto,f_auto,fl_lossy/v1569944754/logistics-platform/images/hehe-logo.png',
-                    'site_url' => 'https://storefront.commerce.hehe.rw/',
-                    'transaction_description' => 'Online Payment.'.$payment->getOrder(),
-                    'payment_result_callback' => '#',
-                    'app_redirection_url' => 'http://localhost:8000/en_US/order/0c3dm-4zjU',
-                ]),
-                'headers' => json_encode([
-                    'Authorization' => 'Bearer ',
-                    'content-type' => 'application/json',
-                ])
-            ]);
+            return $token;
+            // $response = $this->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
+            //     'body' => json_encode([
+            //         'order_id' => $payment->getOrder(),
+            //         'amount' => $payment->getAmount(),
+            //         'currency' => $payment->getCurrencyCode(),
+            //         'app_logo_url' => 'https://res.cloudinary.com/hehe/image/upload/q_auto,f_auto,fl_lossy/v1569944754/logistics-platform/images/hehe-logo.png',
+            //         'site_url' => 'https://storefront.commerce.hehe.rw/',
+            //         'transaction_description' => 'Online Payment.'.$payment->getOrder(),
+            //         'payment_result_callback' => '#',
+            //         'app_redirection_url' => 'http://localhost:8000/en_US/order/0c3dm-4zjU',
+            //     ]),
+            //     'headers' => json_encode([
+            //         'Authorization' => 'Bearer ',
+            //         'content-type' => 'application/json',
+            //     ])
+            // ]);
         } catch (RequestException $exception) {
             $response = $exception->getResponse();
         } finally {
