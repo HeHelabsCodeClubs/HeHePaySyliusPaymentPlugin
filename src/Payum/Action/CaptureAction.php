@@ -68,7 +68,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         try {
             $token = $this->get_token();
 
-            return $token;
+            header('Location: https://google.com');
             // $response = $this->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
             //     'body' => json_encode([
             //         'order_id' => $payment->getOrder(),
