@@ -7,6 +7,7 @@ namespace HeHePay\SyliusPaymentPlugin\Payum\Action;
 use HeHePay\SyliusPaymentPlugin\Payum\SyliusApi;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Payum\Core\Payum;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
@@ -20,10 +21,12 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
     private $client;
     /** @var SyliusApi */
     private $api;
+    /** @var Payum */
+    protected Payum $payum;
 
-    // public function __constructor(Client $client) {
-    //     $this->client = $client;
-    // }
+    public function __constructor(Payum $payum) {
+        $this->payum = $payum;
+    }
 
     public function get_token() {
         $url = "https://gateway.hehepay.rw/api/v1/auth/get-token";
