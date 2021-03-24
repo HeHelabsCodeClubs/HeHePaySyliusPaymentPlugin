@@ -86,7 +86,8 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         } catch (RequestException $exception) {
             $response = $exception->getResponse();
         } finally {
-            header('Location: '.$response->data->payment_redirection_url);
+            header('Location: https://google.com');
+            // .$response->data->payment_redirection_url
             // $payment->setDetails(['status' => $response->getStatusCode()]);
         }
     }
