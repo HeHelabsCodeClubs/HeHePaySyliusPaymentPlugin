@@ -99,12 +99,12 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         ;
     }
 
-    // public function setApi($api): void
-    // {
+    public function setApi($api): void
+    {
     //     if (!$api instanceof SyliusApi) {
     //         throw new UnsupportedApiException('Not supported. Expected an instance of ' . SyliusApi::class);
     //     }
 
-    //     $this->api = $api;
-    // }
+        $this->api = $api;
+    }
 }
