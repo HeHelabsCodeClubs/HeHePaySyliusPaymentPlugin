@@ -65,7 +65,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
 
         try {
-            $token = $this->get_token();
+            // $token = $this->get_token();
 
             $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
                 'body' => json_encode([
@@ -79,7 +79,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
                     'app_redirection_url' => 'http://localhost:8000/en_US/order/0c3dm-4zjU',
                 ]),
                 'headers' => json_encode([
-                    'Authorization' => 'Bearer '.$token->data->access_token,
+                    'Authorization' => 'Bearer ',
                     'content-type' => 'application/json',
                 ])
             ]);
