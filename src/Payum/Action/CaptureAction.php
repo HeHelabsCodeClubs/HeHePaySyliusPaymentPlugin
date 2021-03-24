@@ -58,7 +58,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         return $result;
     }
 
-    public function execute(Client $client, $request) {
+    public function execute($request) {
         RequestNotSupportedException::assertSupports($this, $request);
 
         /** @var SyliusPaymentInterface $payment */
