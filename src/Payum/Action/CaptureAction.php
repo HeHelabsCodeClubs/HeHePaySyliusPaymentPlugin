@@ -24,8 +24,9 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
     /** @var Payum */
     protected Payum $payum;
 
-    public function __constructor(Payum $payum) {
+    public function __constructor(Payum $payum, Client $client) {
         $this->payum = $payum;
+        $this->client = $client;
     }
 
     public function get_token() {
