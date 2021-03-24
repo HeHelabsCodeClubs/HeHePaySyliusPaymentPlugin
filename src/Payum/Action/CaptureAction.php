@@ -65,7 +65,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
 
         try {
-            // $token = $this->get_token();
+            $token = $this->get_token();
 
             $response = $this->client->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
                 'body' => json_encode([
@@ -99,12 +99,12 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         ;
     }
 
-    public function setApi($api): void
-    {
-        if (!$api instanceof SyliusApi) {
-            throw new UnsupportedApiException('Not supported. Expected an instance of ' . SyliusApi::class);
-        }
+    // public function setApi($api): void
+    // {
+    //     if (!$api instanceof SyliusApi) {
+    //         throw new UnsupportedApiException('Not supported. Expected an instance of ' . SyliusApi::class);
+    //     }
 
-        $this->api = $api;
-    }
+    //     $this->api = $api;
+    // }
 }
