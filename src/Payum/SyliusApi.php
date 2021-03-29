@@ -9,13 +9,13 @@ final class SyliusApi
     /** @var string */
     private $apiKey;
 
-    public function __construct(string $apiKey)
+    public function __construct(array $content)
     {
-        $this->apiKey = $apiKey;
+        $this->content = $content;
     }
 
-    public function getApiKey(): string
+    public function getContent(): array
     {
-        return $this->apiKey;
+        return $this->content;
     }
 }

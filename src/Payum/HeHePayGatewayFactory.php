@@ -20,10 +20,18 @@ final class HeHePayGatewayFactory extends GatewayFactory
         ]);
 
         $config['payum.api'] = function (ArrayObject $config) {
-            return [
+            return new SyliusApi([
                 'app_name' => $config['app_name'],
                 'app_key' => $config['app_key'],
-            ];
+                'api_id' => $config['api_id'],
+                'api_secret' => $config['api_secret'],
+                'client_username' => $config['client_username'],
+                'client_password' => $config['client_password'],
+                'logo_url' => $config['logo_url'],
+                'site_url' => $config['site_url'],
+                'payment_result_callback' => $config['payment_result_callback'],
+                'app_redirection_url' => $config['app_redirection_url'],
+            ]);
         };
     }
 }

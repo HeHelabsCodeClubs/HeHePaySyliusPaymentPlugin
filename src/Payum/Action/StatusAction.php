@@ -7,6 +7,7 @@ namespace HeHePay\SyliusPaymentPlugin\Payum\Action;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetStatusInterface;
+use Payum\Core\Reply\HttpRedirect;
 use Sylius\Component\Core\Model\PaymentInterface as SyliusPaymentInterface;
 
 final class StatusAction implements ActionInterface
@@ -22,7 +23,9 @@ final class StatusAction implements ActionInterface
 
         if (200 === $details['status']) {
             $request->markCaptured();
-
+            if(isset($details['redirection_URL'])) {
+                throw new HttpRedirect($details['redirection_URL']);
+            }
             return;
         }
 

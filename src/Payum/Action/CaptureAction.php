@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use Payum\Core\Payum;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
+use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
 use Sylius\Component\Core\Model\PaymentInterface as SyliusPaymentInterface;
@@ -24,17 +25,16 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
     /** @var Payum */
     protected Payum $payum;
 
-    public function __constructor(Payum $payum, Client $client) {
+    public function __constructor(Payum $payum) {
         $this->payum = $payum;
-        $this->client = $client;
     }
 
     public function get_token() {
         $url = "https://gateway.hehepay.rw/api/v1/auth/get-token";
-        
+
         $postData = array(
-            'app_name' => 'hehe-cart',
-            'app_key'=> 'C5485732FA6DEB48779E2E3DCAE8A',
+            'app_name' => $this->getContent['app_name'],
+            'app_key'=> $this->getContent['app_key'],
         );
 
         // for sending data as json type
@@ -42,8 +42,8 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
 
         $ch = curl_init($url);
         curl_setopt(
-            $ch, 
-            CURLOPT_HTTPHEADER, 
+            $ch,
+            CURLOPT_HTTPHEADER,
             array(
                 'Content-Type: application/json',
             )
@@ -66,29 +66,61 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getModel();
 
         try {
-            $token = 0;
-            // $token = $this->get_token();
-            // header('Location: https://google.com');
-            // $response = $this->request('POST', 'https://gateway.hehepay.rw/api/v1/payments/request', [
-            //     'body' => json_encode([
-            //         'order_id' => $payment->getOrder(),
-            //         'amount' => $payment->getAmount(),
-            //         'currency' => $payment->getCurrencyCode(),
-            //         'app_logo_url' => 'https://res.cloudinary.com/hehe/image/upload/q_auto,f_auto,fl_lossy/v1569944754/logistics-platform/images/hehe-logo.png',
-            //         'site_url' => 'https://storefront.commerce.hehe.rw/',
-            //         'transaction_description' => 'Online Payment.'.$payment->getOrder(),
-            //         'payment_result_callback' => '#',
-            //         'app_redirection_url' => 'http://localhost:8000/en_US/order/0c3dm-4zjU',
-            //     ]),
-            //     'headers' => json_encode([
-            //         'Authorization' => 'Bearer ',
-            //         'content-type' => 'application/json',
-            //     ])
-            // ]);
+            $payment_id = $payment->getMethod();
+            $token = $this->get_token();
+            $decode = json_decode($token);
+
+            if($decode->status_code != 200) {
+                $payment->setDetails(['status' => 400]);
+            } else {
+                $url = "https://gateway.hehepay.rw/api/v1/payments/request";
+                $postData = array(
+                    "order_id" => $payment->getId(),
+                    "amount" => $payment->getAmount(),
+                    "currency" => "RWF", // $payment->getCurrencyCode()
+                    "app_logo_url" => $this->getContent['logo_url'],
+                    "site_url" => $this->getContent['site_url'],
+                    "transaction_description" => "Order Payment. ID: ".$payment->getId(),
+                    "payment_result_callback" => $this->getContent["payment_result_callback"],
+                    "app_redirection_url" => $this->getContent["app_redirection_url"],
+                    "custom" => [
+                        "platform" => "web",
+                        "site_url" => $this->getContent['site_url'],
+                        "payment_id" => $payment_id->getId(),
+                        "api_id" => $this->getContent["api_id"],
+                        "api_secret" => $this->getContent["api_secret"],
+                        "client_username" => $this->getContent["client_username"],
+                        "client_password" => $this->getContent["client_password"]
+                    ]
+                );
+
+                // for sending data as json type
+                $fields = json_encode($postData);
+
+                $ch = curl_init($url);
+                curl_setopt(
+                    $ch,
+                    CURLOPT_HTTPHEADER,
+                    array(
+                        'Content-Type: application/json',
+                        'Authorization: Bearer '.$decode->data->access_token,
+                    )
+                );
+                curl_setopt($ch, CURLOPT_HEADER, false);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+
+                $result = curl_exec($ch);
+                curl_close($ch);
+
+                $URL = json_decode($result);
+
+                $payment->setDetails(['redirection_URL' => $URL->data->payment_redirection_url, 'status' => 200]);
+            }
         } catch (RequestException $exception) {
             $response = $exception->getResponse();
-        } finally {
-            header('Location: https://google.com');
+            $payment->setDetails(['status' => $response->getStatusCode()]);
         }
     }
 
@@ -102,10 +134,10 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
 
     public function setApi($api): void
     {
-    //     if (!$api instanceof SyliusApi) {
-    //         throw new UnsupportedApiException('Not supported. Expected an instance of ' . SyliusApi::class);
-    //     }
+        if (!$api instanceof SyliusApi) {
+            throw new UnsupportedApiException('Not supported. Expected an instance of ' . SyliusApi::class);
+        }
 
-        $this->api = $api;
+        $this->getContent = $api->getContent();
     }
 }
