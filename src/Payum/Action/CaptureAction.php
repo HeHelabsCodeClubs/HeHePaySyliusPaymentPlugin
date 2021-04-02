@@ -69,6 +69,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
             $payment_id = $payment->getMethod();
             $token = $this->get_token();
             $decode = json_decode($token);
+            $amount = $payment->getAmount() / 100;
 
             if($decode->status_code != 200) {
                 $payment->setDetails(['status' => 400]);
@@ -76,7 +77,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
                 $url = "https://gateway.hehepay.rw/api/v1/payments/request";
                 $postData = array(
                     "order_id" => $payment->getId(),
-                    "amount" => $payment->getAmount(),
+                    "amount" => $amount,
                     "currency" => "RWF", // $payment->getCurrencyCode()
                     "app_logo_url" => $this->getContent['logo_url'],
                     "site_url" => $this->getContent['site_url'],
